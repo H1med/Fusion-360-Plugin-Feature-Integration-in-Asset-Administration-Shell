@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Feature Detection</title>
+        <link rel="stylesheet" href="palette.css" />
+        <script>
+            function sendInfoToFusion() {
+                const serverUrl = document.getElementById('serverUrl').value;
+                const submodelUrl =
+                    document.getElementById('submodelUrl').value;
+                const conceptUrl = document.getElementById('conceptUrl').value;
+                const jsonPath = document.getElementById('jsonPath').value;
+
+                adsk.fusionSendData(
+                    'starteFeatureErkennung',
+                    JSON.stringify({
+                        serverUrl: serverUrl,
+                        submodelUrl: submodelUrl,
+                        conceptUrl: conceptUrl,
+                        jsonPath: jsonPath,
+                    }),
+                );
+            }
+
+            function selectFolder() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.webkitdirectory = true;
+                input.onchange = function (event) {
+                    if (event.target.files.length > 0) {
+                        const folder = event.target.files[0];
+                        const fullPath = folder.path + '/Feature_daten.json';
+                        document.getElementById('jsonPath').value = fullPath;
+                    }
+                };
+                input.click();
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Feature Erkennung</h1>
+
+            <div class="input-group">
+                <label for="serverUrl">AAS Server URL:</label>
+                <input
+                    type="text"
+                    id="serverUrl"
+                    value="http://localhost:8081/shells"
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="submodelUrl">Submodel URL:</label>
+                <input
+                    type="text"
+                    id="submodelUrl"
+                    value="http://localhost:8081/submodels"
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="conceptUrl">Concept Description URL:</label>
+                <input
+                    type="text"
+                    id="conceptUrl"
+                    value="http://localhost:8081/concept-descriptions"
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="jsonPath">JSON-Speicherort:</label>
+                <div class="file-picker">
+                    <input
+                        type="text"
+                        id="jsonPath"
+                        readonly
+                        placeholder="Ordner für Feature_daten.json auswählen"
+                        value="~/uni/bachelorarbeit/Feature_daten.json"
+                        onclick="selectFolder()"
+                    />
+                </div>
+            </div>
+            <button onclick="sendInfoToFusion()">
+                Feature-Erkennung starten
+            </button>
+        </div>
+    </body>
+</html>
