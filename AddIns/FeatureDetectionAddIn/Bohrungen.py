@@ -1,4 +1,3 @@
-# Basisklasse für Bohrungen
 class BaseHole:
     def __init__(self, bohrungs_typ, segmente, **kwargs):
         self.hole_type = bohrungs_typ

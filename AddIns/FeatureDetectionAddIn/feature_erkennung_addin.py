@@ -1,7 +1,4 @@
 import adsk.core, adsk.fusion, adsk.cam, traceback, os, json
-
-from . import fusion_python_path
-fusion_python_path.run()
 from . import feature_erkennung
 
 _app = None
@@ -14,7 +11,6 @@ def run(context):
         _app = adsk.core.Application.get()
         _ui = _app.userInterface
 
-        # Palette erstellen
         palette_id = 'FeatureErkennungPalette'
         palette_title = 'Feature Erkennung'
         html_file = os.path.join(os.path.dirname(__file__), 'palette.html')
@@ -26,17 +22,18 @@ def run(context):
                 palette_id,
                 palette_title,
                 html_file,
-                True,  # Show close button
-                True,  # Is visible
-                True   # Show initially
+                True,
+                True,
+                True
             )
 
         onHTMLEvent = MyHTMLEventHandler()
         palette.incomingFromHTML.add(onHTMLEvent)
         _handlers.append(onHTMLEvent)
 
-        # Palette an der rechten Seite andocken
         palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
+        palette.width = 300
+
 
     except:
         if _ui:

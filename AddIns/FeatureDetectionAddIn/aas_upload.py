@@ -3,11 +3,9 @@ import requests
 import base64
 
 
-# Funktion zum Base64-Encoden der Submodel-ID
 def base64_encode(value):
     return base64.b64encode(value.encode()).decode()
 
-# Funktion zum Prüfen, ob die AAS-Shell existiert
 def aas_shell_exists(server_url, aas_id):
     aas_id = base64_encode(aas_id)
     response = requests.get(f"{server_url}/{aas_id}")
@@ -23,7 +21,6 @@ def description_exists(concept_url, description_id):
     response = requests.get(f"{concept_url}/{description_id}")
     return response.status_code == 200
 
-# Funktion zum Erstellen der AAS-Shell
 def create_aas_shell(server_url, file_path):
     with open(file_path, "r") as file:
         data = json.load(file)
@@ -56,7 +53,6 @@ def create_aas_shell(server_url, file_path):
         print("AAS-Shell existiert bereits. Überspringe Erstellung.")
 
 
-# Funktion zum Erstellen einer Concept Description
 def create_concept_description(concept_url, cd_id, id_short, description, unit):
     concept_description = {
         "id": f"https://example.com/ids/cd/{cd_id}",
@@ -83,7 +79,6 @@ def create_concept_description(concept_url, cd_id, id_short, description, unit):
     else:
         print(f"Concept Description {id_short} existiert bereits.")
 
-# Funktion zum Erstellen der Hauptstruktur des Submodels
 def create_main_submodel(submodel_url):
     submodel_id = "recognizedFeatures"
     submodel = {
@@ -104,7 +99,6 @@ def create_main_submodel(submodel_url):
     else:
         print("Submodel existiert bereits. Überspringe Erstellung.")
 
-# Funktion zum Hinzufügen einzelner Features (Holes und Pockets)
 def add_feature_to_features(submodel_url, feature, index, feature_type):
     feature_collection = {
         "idShort": f"{feature_type}_{index:03d}",
@@ -116,14 +110,12 @@ def add_feature_to_features(submodel_url, feature, index, feature_type):
         ]
     }
 
-    # Properties Collection
     properties_collection = {
         "idShort": "Properties",
         "modelType": "SubmodelElementCollection",
         "value": []
     }
 
-    # Parameter je nach Feature-Typ
     if feature_type == "Hole":
         for param, value in feature["parameters"].items():
             if value is not None:
@@ -158,7 +150,6 @@ def add_feature_to_features(submodel_url, feature, index, feature_type):
 
     feature_collection["value"].append(properties_collection)
 
-    # Position und Richtung
     if "coordinates" in feature or "center_coordinates" in feature:
         position_collection = {
             "idShort": "Position",
@@ -166,7 +157,6 @@ def add_feature_to_features(submodel_url, feature, index, feature_type):
             "value": []
         }
 
-        # Koordinaten
         coordinates = feature.get("coordinates", feature.get("center_coordinates", {}))
         for axis in ["x", "y", "z"]:
             if axis in coordinates:
@@ -177,7 +167,6 @@ def add_feature_to_features(submodel_url, feature, index, feature_type):
                     "value": coordinates[axis]
                 })
 
-        # Richtung (für Holes und Pockets)
         direction_data = feature.get("direction") or feature.get("recognition_direction")
         if direction_data:
             direction_collection = {
@@ -197,7 +186,6 @@ def add_feature_to_features(submodel_url, feature, index, feature_type):
 
         feature_collection["value"].append(position_collection)
 
-    # Boundary Points (nur Pockets)
     if feature_type == "Pocket" and "boundary_points" in feature:
         boundary_points_collection = {
             "idShort": "BoundaryPoints",
@@ -221,14 +209,12 @@ def add_feature_to_features(submodel_url, feature, index, feature_type):
             boundary_points_collection["value"].append(bp_collection)
         feature_collection["value"].append(boundary_points_collection)
 
-    # Upload
     submodel_id_encoded = base64_encode("recognizedFeatures")
     url = f"{submodel_url}/{submodel_id_encoded}/submodel-elements/Features"
     response = requests.post(url, json=feature_collection)
     print(f"{feature_type} {index} hinzugefügt: {response.status_code} - {response.text}")
 
 
-# Hauptmethode, um alle Features zu verarbeiten
 def create_submodels_for_all_features(file_path, server_url, submodel_url, concept_url):
     create_aas_shell(server_url, file_path)
     create_main_submodel(submodel_url)
@@ -256,7 +242,6 @@ def create_submodels_for_all_features(file_path, server_url, submodel_url, conce
     with open(file_path, "r") as file:
         data = json.load(file)
 
-    # Überprüfen, ob "holes" und "pockets" vorhanden sind
     holes = data.get("holes", [])
     pockets = data.get("pockets", [])
 

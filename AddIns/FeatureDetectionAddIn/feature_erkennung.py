@@ -11,11 +11,11 @@ def filter_zero_and_null(data):
     if isinstance(data, dict):
         filtered = {}
         for k, v in data.items():
-            if k in ["coordinates", "direction"]:  # Immer behalten
+            if k in ["coordinates", "direction"]:
                 filtered[k] = v
             else:
                 value = filter_zero_and_null(v)
-                if value not in [0.0, None, {}, []]:  # Entferne nur unerwünschte Werte
+                if value not in [0.0, None, {}, []]:
                     filtered[k] = value
         return filtered
     elif isinstance(data, list):
@@ -27,38 +27,31 @@ def filter_zero_and_null(data):
  #* ---------------------------- Hole recognition ----------------------------------- *#
 
 def is_valid(recognized_hole, hole_pattern):
-    i = j = 0  # Pointer für Test-Array und dynamisches Array
+    i = j = 0
     n, m = len(recognized_hole), len(hole_pattern)
 
     while i < n and j < m:
-        # Bestimme, ob die aktuelle Position im dynamischen Array optional ist
         current_dynamic = hole_pattern[j]
         optional = None in current_dynamic
         allowed = [v for v in current_dynamic if v is not None]
 
         if recognized_hole[i] in allowed:
-            # Wert passt: Gehe zur nächsten Position in beiden Arrays
             i += 1
             j += 1
         elif optional:
-            # Überspringe optionale Position im dynamischen Array
             j += 1
         else:
-            # Wert passt nicht und Position ist nicht optional → ungültig
             return False
 
-    # Überprüfe verbleibende Positionen im dynamischen Array (müssen optional sein)
     while j < m:
         if None not in hole_pattern[j]:
             return False
         j += 1
 
-    # Das Test-Array muss vollständig verarbeitet sein
     return i == n
 
 def get_hole_direction(hole):
     try:
-        # Normalenvektor der oberen Fläche der Bohrung
         direction = hole.axis
         return {
             "dx": round(direction.x, 3),
@@ -67,8 +60,7 @@ def get_hole_direction(hole):
         }
     except:
         _ui.messageBox("Fehler beim Abrufen der Richtung der Bohrung.")
-        return {"dx": 0.0, "dy": 0.0, "dz": 1.0}  # Standardrichtung, falls Fehler
-
+        return {"dx": 0.0, "dy": 0.0, "dz": 1.0}
 
 def get_mapping(recognized_hole, hole_pattern):
     mapping = []
@@ -81,16 +73,15 @@ def get_mapping(recognized_hole, hole_pattern):
         allowed = [v for v in current_dynamic if v is not None]
 
         if recognized_hole[i] in allowed:
-            mapping.append(i)  # Speichere den Index des passenden Segments
+            mapping.append(i)
             i += 1
             j += 1
         elif optional:
-            mapping.append(None)  # Optionales Segment wurde übersprungen
+            mapping.append(None)
             j += 1
         else:
-            return None  # Ungültige Übereinstimmung
+            return None
 
-    # Überprüfe restliche dynamische Segmente (müssen optional sein)
     while j < m:
         if None not in hole_pattern[j]:
             return None
@@ -143,7 +134,7 @@ def recognize_holes(hole, design):
             "y": round(coordinates[1] * 10, 3),
             "z": round(coordinates[2] * 10, 3)
         },
-        "direction": direction  # Hier die Richtung hinzufügen
+        "direction": direction
     }
 
 
@@ -271,12 +262,12 @@ def classify_hole(segments: list[dict], angles: dict, is_through: bool) -> BaseH
 #! vorne und links für dupe test
 def get_all_pockets(body):
     directions = [
-        adsk.core.Vector3D.create(0, 0, -1),  # Von oben
-        adsk.core.Vector3D.create(0, 0, 1),   # Von unten
-        adsk.core.Vector3D.create(1, 0, 0),   # Von rechts
-        adsk.core.Vector3D.create(-1, 0, 0),  # Von links
-        adsk.core.Vector3D.create(0, 1, 0),   # Von vorne
-        adsk.core.Vector3D.create(0, -1, 0)   # Von hinten
+        adsk.core.Vector3D.create(0, 0, -1),
+        adsk.core.Vector3D.create(0, 0, 1),
+        adsk.core.Vector3D.create(1, 0, 0),
+        adsk.core.Vector3D.create(-1, 0, 0),
+        adsk.core.Vector3D.create(0, 1, 0),
+        adsk.core.Vector3D.create(0, -1, 0)
     ]
 
     pockets_with_dir = []
@@ -285,7 +276,6 @@ def get_all_pockets(body):
         try:
             pockets = adsk.cam.RecognizedPocket.recognizePockets(body, direction)
 
-            # Append each pocket + direction
             for pocket in pockets:
                 pockets_with_dir.append({'pocket': pocket, 'direction': direction})
 
@@ -339,7 +329,6 @@ def calculate_pocket_center(pocket):
     return adsk.core.Point3D.create(center_x, center_y, center_z)
 
 def get_boundary_points(pocket: adsk.cam.RecognizedPocket) -> list:
-    """Extrahiert die Randpunkte einer Tasche."""
     points = []
     for boundary in pocket.boundaries:
         for curve in boundary:
@@ -353,7 +342,6 @@ def get_boundary_points(pocket: adsk.cam.RecognizedPocket) -> list:
         f"({point.x}, {point.y}, {point.z})"
         for point in points
     ]
-    #_app.log(f"Points: {readable_points}")
     return points
 
 def is_circular_pocket(pocket: adsk.cam.RecognizedPocket) -> bool:
@@ -367,16 +355,14 @@ def process_pocket_data(pocket, design, direction):
     pocket_type = "Through Pocket" if pocket.isThrough else "Blind Pocket"
     pocket_closure = "Closed Pocket" if pocket.isClosed else "Open Pocket"
     pocket_center = calculate_pocket_center(pocket)
-    boundary_points = get_boundary_points(pocket)  # Liefert eine Liste von adsk.core.Point3D
+    boundary_points = get_boundary_points(pocket)
 
-    # Konvertiere die Punkte in ein Dictionary-Format (mit Skalierung, falls nötig)
     raw_boundary_points = [{
         "x": round(pt.x * 10, 3),
         "y": round(pt.y * 10, 3),
         "z": round(pt.z * 10, 3)
     } for pt in boundary_points] if boundary_points else []
 
-    # Filtere doppelte Punkte
     unique_boundary_points = []
     seen = set()
     for pt in raw_boundary_points:
@@ -399,7 +385,7 @@ def process_pocket_data(pocket, design, direction):
             "dy": round(direction.y, 3),
             "dz": round(direction.z, 3)
         },
-        "boundary_points": unique_boundary_points  # Nur eindeutige Punkte werden gespeichert
+        "boundary_points": unique_boundary_points
     }
 
 
@@ -415,11 +401,9 @@ def run(user_input):
         des = doc.products.itemByProductType('DesignProductType')
         body = des.rootComponent.bRepBodies[0]
 
-        # Bauteilname und ID aus dem aktuellen Dokument extrahieren
         component_name = des.rootComponent.name
         component_id = doc.name.split('.')[0]
 
-        # Feature-Daten sammeln
         feature_data = {
             "component_id": component_id,
             "component_name": component_name,
@@ -427,7 +411,6 @@ def run(user_input):
             "pockets": []
         }
 
-        # -- Holes (unchanged) --
         recognizedHolesInput = adsk.cam.RecognizedHolesInput.create()
         holeGroups = adsk.cam.RecognizedHoleGroup.recognizeHoleGroupsWithInput([body], recognizedHolesInput)
         for holeGroup in holeGroups:
@@ -435,26 +418,21 @@ def run(user_input):
                 hole_data = recognize_holes(hole, des)
                 feature_data["holes"].append(hole_data)
 
-        # -- Pockets with direction --
-        pockets_with_dir = get_all_pockets(body)  # returns [{'pocket': p, 'direction': d}, ...]
+        pockets_with_dir = get_all_pockets(body)
         for item in pockets_with_dir:
             pocket = item['pocket']
             direction = item['direction']
 
-            # 1. Offene Taschen ignorieren
             if not pocket.isClosed:
                 continue
 
-            # 2. Rein zirkuläre Taschen ignorieren (falls gewünscht)
             if is_circular_pocket(pocket):
                 continue
 
-            # 3. Wenn eine Tasche beide Prüfungen bestanden hat, verarbeiten
             pocket_data = process_pocket_data(pocket, des, direction)
             feature_data["pockets"].append(pocket_data)
 
 
-        # Filter & write JSON
         filtered_feature_data = filter_zero_and_null(feature_data)
         output_path = os.path.abspath(os.path.expanduser(user_input["jsonPath"]))
 
