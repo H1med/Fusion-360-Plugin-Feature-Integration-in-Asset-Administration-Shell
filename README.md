@@ -15,22 +15,19 @@ Führen Sie das Skript `fusion_python_path.py` in Fusion aus, um den Pfad zur Py
 
 ### 2. Ermittlung des Pfades der Python Installation von Fusion
  
-Nach der Ausführung des Skripts wird der Pfad zur Python-Installation in der Konsole von Fusion angezeigt.
+Nach der Ausführung des Skripts wird eine ID angezeigt. Diese ID muss dann in folgenden Pfad eingefügt werden:
 
 ##### Windows
-`sys executable :C:\Users\<username>\AppData\Local\Autodesk\webdeploy\production\...\Python\python.exe`
+`C:\\Users\\<username>\\AppData\\Local\\Autodesk\\webdeploy\\production\\<ID>\\Python\\python.exe`
 
-##### MacOS
-`sys executable: /Users/<username>/Library/Application Support/Autodesk/webdeploy/production/.../Autodesk Fusion.app/Contents/MacOS/Autodesk Fusion`
-
-##### Hinweis: Der Ausgegebene Pfad für MacOS ist nicht korrekt. Der tatsächliche Pfad lautet:
-`/Users/<username>/Library/Application\ Support/Autodesk/webdeploy/production/.../Autodesk\ Fusion.app/Contents/Frameworks/Python.framework/Versions/3.12/bin/python`
+##### MacOS:
+`/Users/<username>/Library/Application\ Support/Autodesk/webdeploy/production/<ID>/Autodesk\ Fusion.app/Contents/Frameworks/Python.framework/Versions/3.12/bin/python`
 
 ### 3. Erstellen der virtuellen Umgebung
-Erstellen sie einen Ordner names `Fusion` an einem Pfad ihrer Wahl und navegieren sie zu dem Ordner mit:
+Erstellen Sie einen Ordner names `Fusion` an einem Pfad ihrer Wahl und navegieren Sie zu dem Ordner mit:
 `cd Fusion`
 Verwenden Sie den ermittelten Pfad, um eine virtuelle Umgebung zu erstellen:
-`virtualenv -p <FUSION_PYTHON_PFAD> py39_fusion`
+`python -m virtualenv -p <PFAD_AUS_SCHRITT_2> py39_fusion`
 Aktivieren Sie die virtuelle Umgebung:
 #### Windows
 `.\py39_fusion\Scripts\activate`
@@ -39,28 +36,40 @@ Aktivieren Sie die virtuelle Umgebung:
 
 ### 4. Installieren der Module
 Installieren Sie das requests Modul mit pip:
-`pip install requests`
+`python -m pip install requests`
 
-### 5. Erneutes Ausführen des Skripts
-Führen Sie das Skript `fusion_python_path.py` erneut aus, um den `sys path` zu erhalten. Dieser Pfad muss im Skript unter der Variable `_PATH` eingesetzt werden.
-```python
-def run(context):
-    ui = None
-    try:
-        app = adsk.core.Application.get()
-        ui  = app.userInterface
-        _PATH = <HIER DEN PFAD EINFÜGEN>
-        import sys
-        app.log(f'sys executable: {sys.executable}')      
-        if not _PATH in sys.path:
-            sys.path.append(_PATH)                        
-            pass
-        app.log(f'sys path: {sys.path[-1]}')              
-        sys.path
-    except:
-        if ui:
-            ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
-```
+### 5. Ermitteln des `site-packages` -Pfads
+Damit Fusion auf die in der virtuellen Umgebung installierten Python-Module zugreifen kann, muss der absolute Pfad zum `site-packages` -Ordner in das Skript eingetragen werden. Je nach Betriebssystem befindet sich der `site-packages` -Ordner an folgendem Speicherort:
+
+#### Windows 
+`\Fusion\py39_fusion\Lib\site-packages`
+
+#### MacOS
+`/Fusion/py39_fusion/lib/python3.12/site-packages`
+
+#### Wichtig: Der absolute Pfad hängt davon ab, wo Sie den Ordner Fusion erstellt haben.
+
+#### Windows: Den vollständigen Pfad kopieren
+1. Öffnen Sie den Datei-Explorer und navigieren Sie zum `site-packages`-Ordner.
+2. Klicken Sie in die Adressleiste des Explorers
+3. Drücken Sie `Strg + C`, um den Pfad zu kopieren.   
+
+#### **MacOS: Den vollständigen Pfad kopieren**  
+1. Öffnen Sie das Terminal und navigieren SIe zum erstellten `Fusion` Ordner.  
+2. Navigieren Sie dann zu:
+`cd /py39_fusion/lib/python3.12/site-packages`
+3. Führen Sie den folgenden Befehl aus, um den absoluten Pfad auszugeben:
+`pdw`
+4. Kopieren Sie den ausgegebenen Pfad
+
+### 6. Pfad in das Skript eintragen
+Öffnen Sie das Skript `fusion_python_path.py` mit dem Editor Ihrer Wahl und fügen Sie den Kopierten Pfad unter der Variable `_PATH` ein. Starten Sie anschließend erneut das Skript.
+#### Hinweis Windows:
+In Python müssen Backslashes (\\) durch doppelte Backslashes (\\\\) ersetzt werden.
+
+#### Hinweis MacOS:
+Falls der Pfad Leerzeichen enthält, müssen diese in Python mit einem \ (Backslash) escaped werden.
+
 ### 6. AddIn ausführen
 Starten Sie anschließend Fusion neu, um die Änderungen zu übernehmen.
 Nach dem Neustart können Sie das AddIn `feature_erkennung_addin` ausführen in dem Sie es mit `shift + s` unter AddIns hinzufügen und ausführen.
