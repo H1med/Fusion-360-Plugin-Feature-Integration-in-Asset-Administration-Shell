@@ -6,7 +6,7 @@ def run(context):
         app = adsk.core.Application.get()
         ui  = app.userInterface
 
-        _PATH = '/Users/hamed/uni/bachelorarbeit/fusion/py39_fusion/lib/python3.12/site-packages'
+        _PATH = 'HIER PFAD EINGEBEN'
 
         executable_path = sys.executable
         match = re.search(r'production\\([^\\]+)\\', executable_path)
