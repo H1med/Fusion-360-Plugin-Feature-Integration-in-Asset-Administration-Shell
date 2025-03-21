@@ -259,7 +259,6 @@ def classify_hole(segments: list[dict], angles: dict, is_through: bool) -> BaseH
 
 #* ---------------------------- Hole recognition ----------------------------------- *#
 #? ---------------------------- POCKET recognition ----------------------------------- ?#
-#! vorne und links für dupe test
 def get_all_pockets(body):
     directions = [
         adsk.core.Vector3D.create(0, 0, -1),
@@ -434,7 +433,9 @@ def run(user_input):
 
 
         filtered_feature_data = filter_zero_and_null(feature_data)
-        output_path = os.path.abspath(os.path.expanduser(user_input["jsonPath"]))
+
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        output_path = os.path.join(script_dir, "Feature_daten.json")
 
         if not output_path.lower().endswith('.json'):
             output_path += '/Feature_daten.json'

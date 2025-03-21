@@ -19,23 +19,8 @@
                         serverUrl: serverUrl,
                         submodelUrl: submodelUrl,
                         conceptUrl: conceptUrl,
-                        jsonPath: jsonPath,
                     }),
                 );
-            }
-
-            function selectFolder() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.webkitdirectory = true;
-                input.onchange = function (event) {
-                    if (event.target.files.length > 0) {
-                        const folder = event.target.files[0];
-                        const fullPath = folder.path + '/Feature_daten.json';
-                        document.getElementById('jsonPath').value = fullPath;
-                    }
-                };
-                input.click();
             }
         </script>
     </head>
@@ -68,19 +53,6 @@
                     id="conceptUrl"
                     placeholder="URL für die Concept Descriptions eingeben"
                 />
-            </div>
-
-            <div class="input-group">
-                <label for="jsonPath">JSON-Speicherort:</label>
-                <div class="file-picker">
-                    <input
-                        type="text"
-                        id="jsonPath"
-                        readonly
-                        placeholder="Ordner für Feature_daten.json auswählen"
-                        onclick="selectFolder()"
-                    />
-                </div>
             </div>
             <button onclick="sendInfoToFusion()">
                 Feature-Erkennung starten
