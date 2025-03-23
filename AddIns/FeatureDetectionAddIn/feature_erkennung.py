@@ -6,8 +6,6 @@ _app = adsk.core.Application.get()
 _ui = _app.userInterface
 
 def filter_zero_and_null(data):
-    """Rekursiv durchläuft das Dictionary oder die Liste und entfernt Werte, die 0.0 oder None sind,
-    außer in 'coordinates' und 'direction'."""
     if isinstance(data, dict):
         filtered = {}
         for k, v in data.items():
@@ -244,7 +242,7 @@ def classify_hole(segments: list[dict], angles: dict, is_through: bool) -> BaseH
     ]
 
     for config in hole_configs:
-        if (is_valid(segment_types, config["pattern"]) and config.get("conditions", lambda: True)()):  # <-- Bedingung prüfen
+        if (is_valid(segment_types, config["pattern"]) and config.get("conditions", lambda: True)()):
             _app.log(f"segment_types: {segment_types}")
             mapping = get_mapping(segment_types, config["pattern"])
             _app.log(f"Mapping: {mapping}")
@@ -391,7 +389,6 @@ def process_pocket_data(pocket, design, direction):
 
 
 #? ---------------------------- Hole recognition ----------------------------------- ?#
-
 """ ---------------------------- Main ----------------------------------- """
 
 def run(user_input):
