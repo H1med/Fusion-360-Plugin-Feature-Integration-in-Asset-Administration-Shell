@@ -177,7 +177,7 @@ def add_feature_to_features(submodel_url, feature, index, feature_type):
             for axis in ["dx", "dy", "dz"]:
                 if axis in direction_data:
                     direction_collection["value"].append({
-                        "idShort": axis.upper().replace("d", "D"),  # DX, DY, DZ
+                        "idShort": axis.upper().replace("d", "D"),
                         "modelType": "Property",
                         "valueType": "double",
                         "value": direction_data[axis]
