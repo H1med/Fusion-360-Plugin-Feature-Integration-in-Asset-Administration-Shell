@@ -12,7 +12,7 @@ Dieses Dokument erklärt, wie man eine virtuelle Umgebung für die Python-Instal
 ### 1. Ermitteln des Python-Pfads von Fusion
 
 Sie können Skripte und AddIns mit dem shortcut `shift + s` zu Fusion hinzufügen.
-Führen Sie entweder das Skript `fusion_python_path_WINDOWS.py` oder `fusion_python_path_MAC.py` in Fusion aus, um den Pfad zur Python-Installation von Fusion zu ermitteln.
+Führen Sie entweder das Skript `fusion_python_path_WINDOWS.py` oder `fusion_python_path_MAC.py` in Fusion aus, um den Pfad zur Python-Installation von Fusion zu ermitteln. Diese befinden sich im `Scripts`Ordner unter jeweils `WINDOWS`oder `MAC`.
 
 ### 2. Ermittlung des Pfades der Python Installation von Fusion
  
@@ -76,4 +76,4 @@ Starten Sie anschließend Fusion neu, um die Änderungen zu übernehmen.
 Nach dem Neustart können Sie das AddIn `feature_erkennung_addin` ausführen in dem Sie es mit `shift + s` unter AddIns hinzufügen und ausführen.
 
 #### Wichtiger Hinweis
-Nach jedem Neustart von Fusion muss einmla das Skript `fusion_python_path_WINDOWS.py` oder `fusion_python_path_MAC.py` erneut ausgeführt werden bevor das AddIn getartet wird.
+Nach jedem Neustart von Fusion muss einmal das Skript `fusion_python_path_WINDOWS.py` oder `fusion_python_path_MAC.py` erneut ausgeführt werden bevor das AddIn getartet wird.
