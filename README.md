@@ -11,20 +11,21 @@ Dieses Dokument erklärt, wie man eine virtuelle Umgebung für die Python-Instal
 
 ### 1. Ermitteln des Python-Pfads von Fusion
 
-Führen Sie das Skript `fusion_python_path.py` in Fusion aus, um den Pfad zur Python-Installation von Fusion zu ermitteln. Sie können Skripte und AddIns mit dem shortcut `shift + s` zu Fusion hinzufügen.
+Sie können Skripte und AddIns mit dem shortcut `shift + s` zu Fusion hinzufügen.
+Führen Sie entweder das Skript `fusion_python_path_WINDOWS.py` oder `fusion_python_path_MAC.py` in Fusion aus, um den Pfad zur Python-Installation von Fusion zu ermitteln.
 
 ### 2. Ermittlung des Pfades der Python Installation von Fusion
  
-Nach der Ausführung des Skripts wird eine ID angezeigt. Diese ID muss dann in folgenden Pfad eingefügt werden:
+Nach der Ausführung des Skripts wird eine ID angezeigt. Diese ID ist für Schritt 3 erforderlich und muss in den folgenden Pfad eingefügt werden:
 
 ##### Windows
-`C:\\Users\\<username>\\AppData\\Local\\Autodesk\\webdeploy\\production\\<ID>\\Python\\python.exe`
+`C:\\Users\\<username>\\AppData\\Local\\Autodesk\\webdeploy\\production\\<HIER_DIE_ID_EINGEBEN>\\Python\\python.exe`
 
 ##### MacOS:
-`/Users/<username>/Library/Application\ Support/Autodesk/webdeploy/production/<ID>/Autodesk\ Fusion.app/Contents/Frameworks/Python.framework/Versions/3.12/bin/python`
+`/Users/<username>/Library/Application\ Support/Autodesk/webdeploy/production/<HIER_DIE_ID_EINGEBEN>/Autodesk\ Fusion.app/Contents/Frameworks/Python.framework/Versions/3.12/bin/python`
 
 ### 3. Erstellen der virtuellen Umgebung
-Erstellen Sie einen Ordner names `Fusion` an einem Pfad ihrer Wahl und navegieren Sie zu dem Ordner mit:
+Erstellen Sie einen Ordner names `Fusion` an einem Pfad ihrer Wahl und navigieren Sie zu dem Ordner mit:
 `cd Fusion`
 Verwenden Sie den ermittelten Pfad, um eine virtuelle Umgebung zu erstellen:
 `python -m virtualenv -p <PFAD_AUS_SCHRITT_2> py39_fusion`
@@ -70,6 +71,9 @@ In Python müssen Backslashes (\\) durch doppelte Backslashes (\\\\) ersetzt wer
 #### Hinweis MacOS:
 Falls der Pfad Leerzeichen enthält, müssen diese in Python mit einem \ (Backslash) escaped werden.
 
-### 6. AddIn ausführen
+### 7. AddIn ausführen
 Starten Sie anschließend Fusion neu, um die Änderungen zu übernehmen.
 Nach dem Neustart können Sie das AddIn `feature_erkennung_addin` ausführen in dem Sie es mit `shift + s` unter AddIns hinzufügen und ausführen.
+
+#### Wichtiger Hinweis
+Nach jedem Neustart von Fusion muss einmla das Skript `fusion_python_path_WINDOWS.py` oder `fusion_python_path_MAC.py` erneut ausgeführt werden bevor das AddIn getartet wird.
