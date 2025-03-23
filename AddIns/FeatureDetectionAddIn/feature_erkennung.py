@@ -458,7 +458,7 @@ def run(user_input):
             user_input["conceptUrl"]
         )
 
-        _ui.messageBox(f"Daten gespeichert und gesendet: {output_path}")
+        _ui.messageBox(f"Die Daten wurden erfolgreich gespeichert und gesendet.")
 
     except Exception as e:
         _ui.messageBox(f"Kritischer Fehler: {str(e)}\n{traceback.format_exc()}")
