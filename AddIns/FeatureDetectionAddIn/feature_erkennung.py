@@ -243,9 +243,7 @@ def classify_hole(segments: list[dict], angles: dict, is_through: bool) -> BaseH
 
     for config in hole_configs:
         if (is_valid(segment_types, config["pattern"]) and config.get("conditions", lambda: True)()):
-            _app.log(f"segment_types: {segment_types}")
             mapping = get_mapping(segment_types, config["pattern"])
-            _app.log(f"Mapping: {mapping}")
 
             if mapping:
                 params = config["param_logic"](mapping, segments)
